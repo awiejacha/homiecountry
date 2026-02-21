@@ -1,4 +1,4 @@
-import Country, { InvalidCountryError, afterVatIn, countryCodeOf } from './country';
+import Country, { InvalidCountryError, afterVatIn, countryCodeOf, getCountryCode } from './country';
 
 describe('CountryCode', () => {
   test('should create CountryCode for European countries', () => {
@@ -133,6 +133,21 @@ describe('CountryCode', () => {
     test('functions should return null or false for invalid input', () => {
       expect(afterVatIn('INVALID', 100)).toBeNull();
       expect(countryCodeOf('Albania')).toBeNull();
+    });
+  });
+
+  describe('getCountryCode', () => {
+    test('should return exactly the same CountryCode when given valid inputs', () => {
+      expect(getCountryCode('PL')).toBe('PL');
+      expect(getCountryCode('GERMANY')).toBe('DE');
+      expect(getCountryCode('RÉUNION')).toBe('FR');
+      expect(getCountryCode('GL')).toBe('DK');
+    });
+
+    test('should throw InvalidCountryError on invalid input', () => {
+      expect(() => getCountryCode('INVALID_CODE')).toThrow(InvalidCountryError);
+      expect(() => getCountryCode('US')).toThrow(InvalidCountryError);
+      expect(() => getCountryCode('')).toThrow(InvalidCountryError);
     });
   });
 });

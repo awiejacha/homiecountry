@@ -1,3 +1,5 @@
+export type CountryCode = keyof typeof COUNTRY_MAP;
+export type LanguageCode = (typeof COUNTRY_MAP)[CountryCode]['defaultLanguage'];
 export class InvalidCountryError extends Error {
   constructor(message: string) {
     super(message);
@@ -5,7 +7,7 @@ export class InvalidCountryError extends Error {
     Object.setPrototypeOf(this, InvalidCountryError.prototype);
   }
 }
-const EUROPEAN_COUNTRY_MAPPING = {
+const CODE_MAP = {
   AI: 'GB',
   AT: 'AT',
   AW: 'NL',
@@ -66,7 +68,10 @@ const EUROPEAN_COUNTRY_MAPPING = {
   WF: 'FR',
   YT: 'FR',
 } as const;
-export const countryLanguageConfig = {
+export const COUNTRY_MAP: Record<
+  string,
+  { name: string; defaultLanguage: string; vatRate: number }
+> = {
   DE: { name: 'GERMANY', defaultLanguage: 'DE', vatRate: 0.19 },
   CH: { name: 'SWITZERLAND', defaultLanguage: 'DE', vatRate: 0.081 },
   AT: { name: 'AUSTRIA', defaultLanguage: 'DE', vatRate: 0.2 },
@@ -91,9 +96,7 @@ export const countryLanguageConfig = {
   RO: { name: 'ROMANIA', defaultLanguage: 'RO', vatRate: 0.19 },
   GB: { name: 'UNITED KINGDOM', defaultLanguage: 'EN', vatRate: 0.2 },
 } as const;
-export type CountryCode = keyof typeof countryLanguageConfig;
-export type LanguageCode = (typeof countryLanguageConfig)[CountryCode]['defaultLanguage'];
-const TERRITORY_NAME_TO_CODE: Record<string, string> = {
+const TERRITORY_MAP: Record<string, string> = {
   GREENLAND: 'GL',
   'FAROE ISLANDS': 'FO',
   'FRENCH GUIANA': 'GF',
@@ -130,44 +133,29 @@ const TERRITORY_NAME_TO_CODE: Record<string, string> = {
   'SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS': 'GS',
   'TURKS AND CAICOS ISLANDS': 'TC',
   'ÅLAND ISLANDS': 'AX',
-};
-const COUNTRY_NAME_TO_CODE: Record<string, string> = { ...TERRITORY_NAME_TO_CODE };
+} as const;
 const normalizeDiacritics = (s: string) =>
   s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-let isInitialized = false;
-function initializeMappings() {
-  if (isInitialized) return;
-  Object.keys(TERRITORY_NAME_TO_CODE).forEach((n) => {
-    COUNTRY_NAME_TO_CODE[normalizeDiacritics(n)] = TERRITORY_NAME_TO_CODE[n];
-  });
-  Object.keys(countryLanguageConfig).forEach((code) => {
-    const { name } = countryLanguageConfig[code as CountryCode];
-    COUNTRY_NAME_TO_CODE[name] = code;
-    COUNTRY_NAME_TO_CODE[normalizeDiacritics(name)] = code;
-  });
-  isInitialized = true;
-}
+const map = new Map();
+Object.entries(TERRITORY_MAP).forEach(([name, code]) => {
+  map.set(normalizeDiacritics(name), CODE_MAP[code]);
+  map.set(code, CODE_MAP[code]);
+});
+Object.entries(COUNTRY_MAP).forEach(([code, { name }]) => {
+  map.set(normalizeDiacritics(name), code);
+  map.set(code, code);
+});
 export function getCountryCode(input: string): CountryCode {
-  initializeMappings();
   const normalizedInput = normalizeDiacritics(input.toUpperCase());
-  const codeFromMapping =
-    EUROPEAN_COUNTRY_MAPPING[normalizedInput as keyof typeof EUROPEAN_COUNTRY_MAPPING];
-  const codeFromName = COUNTRY_NAME_TO_CODE[normalizedInput];
-  const finalCode =
-    codeFromMapping ||
-    (codeFromName &&
-      EUROPEAN_COUNTRY_MAPPING[codeFromName as keyof typeof EUROPEAN_COUNTRY_MAPPING]);
-  if (!finalCode || !(finalCode in countryLanguageConfig))
-    throw new InvalidCountryError(
-      `Invalid European country code, territory or name: ${input}`,
-    );
-  return finalCode as CountryCode;
+  if (!map.has(normalizedInput))
+    throw new InvalidCountryError(`Invalid country input: ${input}`);
+  return map.get(normalizedInput) as CountryCode;
 }
 export function getDefaultLang(countryCode: CountryCode): string {
-  return countryLanguageConfig[countryCode].defaultLanguage;
+  return COUNTRY_MAP[countryCode].defaultLanguage;
 }
 export function afterVat(countryCode: CountryCode, grossPrice: number): number {
-  return grossPrice / (1 + countryLanguageConfig[countryCode].vatRate);
+  return grossPrice / (1 + COUNTRY_MAP[countryCode].vatRate);
 }
 export default class Country {
   private readonly countryCode: CountryCode;
