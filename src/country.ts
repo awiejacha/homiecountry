@@ -93,10 +93,48 @@ export const countryLanguageConfig = {
   GB: { name: 'UNITED KINGDOM', defaultLanguage: 'EN', vatRate: 0.2 },
 } as const;
 export type CountryCode = keyof typeof countryLanguageConfig;
-export type LanguageCode = typeof countryLanguageConfig[CountryCode]['defaultLanguage'];
-const TERRITORY_NAME_TO_CODE: Record<string, string> = { GREENLAND: 'GL', 'FAROE ISLANDS': 'FO', 'FRENCH GUIANA': 'GF', GUADELOUPE: 'GP', MARTINIQUE: 'MQ', MAYOTTE: 'YT', RÉUNION: 'RE', 'SAINT BARTHÉLEMY': 'BL', 'SAINT MARTIN': 'MF', 'SAINT PIERRE AND MIQUELON': 'PM', 'WALLIS AND FUTUNA': 'WF', 'FRENCH POLYNESIA': 'PF', 'NEW CALEDONIA': 'NC', 'FRENCH SOUTHERN TERRITORIES': 'TF', ARUBA: 'AW', CURAÇAO: 'CW', 'SINT MAARTEN': 'SX', 'CARIBBEAN NETHERLANDS': 'BQ', 'SVALBARD AND JAN MAYEN': 'SJ', 'BOUVET ISLAND': 'BV', GIBRALTAR: 'GI', GUERNSEY: 'GG', 'ISLE OF MAN': 'IM', JERSEY: 'JE', ANGUILLA: 'AI', BERMUDA: 'BM', 'BRITISH INDIAN OCEAN TERRITORY': 'IO', 'BRITISH VIRGIN ISLANDS': 'VG', 'CAYMAN ISLANDS': 'KY', 'FALKLAND ISLANDS': 'FK', MONTSERRAT: 'MS', 'PITCAIRN ISLANDS': 'PN', 'SAINT HELENA, ASCENSION AND TRISTAN DA CUNHA': 'SH', 'SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS': 'GS', 'TURKS AND CAICOS ISLANDS': 'TC', 'ÅLAND ISLANDS': 'AX' };
+export type LanguageCode = (typeof countryLanguageConfig)[CountryCode]['defaultLanguage'];
+const TERRITORY_NAME_TO_CODE: Record<string, string> = {
+  GREENLAND: 'GL',
+  'FAROE ISLANDS': 'FO',
+  'FRENCH GUIANA': 'GF',
+  GUADELOUPE: 'GP',
+  MARTINIQUE: 'MQ',
+  MAYOTTE: 'YT',
+  RÉUNION: 'RE',
+  'SAINT BARTHÉLEMY': 'BL',
+  'SAINT MARTIN': 'MF',
+  'SAINT PIERRE AND MIQUELON': 'PM',
+  'WALLIS AND FUTUNA': 'WF',
+  'FRENCH POLYNESIA': 'PF',
+  'NEW CALEDONIA': 'NC',
+  'FRENCH SOUTHERN TERRITORIES': 'TF',
+  ARUBA: 'AW',
+  CURAÇAO: 'CW',
+  'SINT MAARTEN': 'SX',
+  'CARIBBEAN NETHERLANDS': 'BQ',
+  'SVALBARD AND JAN MAYEN': 'SJ',
+  'BOUVET ISLAND': 'BV',
+  GIBRALTAR: 'GI',
+  GUERNSEY: 'GG',
+  'ISLE OF MAN': 'IM',
+  JERSEY: 'JE',
+  ANGUILLA: 'AI',
+  BERMUDA: 'BM',
+  'BRITISH INDIAN OCEAN TERRITORY': 'IO',
+  'BRITISH VIRGIN ISLANDS': 'VG',
+  'CAYMAN ISLANDS': 'KY',
+  'FALKLAND ISLANDS': 'FK',
+  MONTSERRAT: 'MS',
+  'PITCAIRN ISLANDS': 'PN',
+  'SAINT HELENA, ASCENSION AND TRISTAN DA CUNHA': 'SH',
+  'SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS': 'GS',
+  'TURKS AND CAICOS ISLANDS': 'TC',
+  'ÅLAND ISLANDS': 'AX',
+};
 const COUNTRY_NAME_TO_CODE: Record<string, string> = { ...TERRITORY_NAME_TO_CODE };
-const normalizeDiacritics = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const normalizeDiacritics = (s: string) =>
+  s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 let isInitialized = false;
 function initializeMappings() {
   if (isInitialized) return;
@@ -113,10 +151,17 @@ function initializeMappings() {
 export function getCountryCode(input: string): CountryCode {
   initializeMappings();
   const normalizedInput = normalizeDiacritics(input.toUpperCase());
-  const codeFromMapping = EUROPEAN_COUNTRY_MAPPING[normalizedInput as keyof typeof EUROPEAN_COUNTRY_MAPPING];
+  const codeFromMapping =
+    EUROPEAN_COUNTRY_MAPPING[normalizedInput as keyof typeof EUROPEAN_COUNTRY_MAPPING];
   const codeFromName = COUNTRY_NAME_TO_CODE[normalizedInput];
-  const finalCode = codeFromMapping || (codeFromName && EUROPEAN_COUNTRY_MAPPING[codeFromName as keyof typeof EUROPEAN_COUNTRY_MAPPING]);
-  if (!finalCode || !(finalCode in countryLanguageConfig)) throw new InvalidCountryError(`Invalid European country code, territory or name: ${input}`);
+  const finalCode =
+    codeFromMapping ||
+    (codeFromName &&
+      EUROPEAN_COUNTRY_MAPPING[codeFromName as keyof typeof EUROPEAN_COUNTRY_MAPPING]);
+  if (!finalCode || !(finalCode in countryLanguageConfig))
+    throw new InvalidCountryError(
+      `Invalid European country code, territory or name: ${input}`,
+    );
   return finalCode as CountryCode;
 }
 export function getDefaultLang(countryCode: CountryCode): string {
