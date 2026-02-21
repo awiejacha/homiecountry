@@ -1,0 +1,31 @@
+{
+  "name": "@awiejacha/country",
+  "version": "1.0.0",
+  "main": "src/country.ts",
+  "keywords": [],
+  "author": "Adrian Wiejacha",
+  "license": "UNLICENSED",
+  "description": "Handy utils for countries",
+  "private": true,
+  "scripts": {
+    "lint": "npx eslint . --ext .ts",
+    "build": "rm -f src/**/*/*.dist.js && for f in src/**/*/*.entry.ts; do if [ -f \"$f\" ]; then npx esbuild \"$f\" --bundle --platform=node --target=es2022,node22 --format=esm --tree-shaking=true --outfile=\"${f%.ts}.dist.js\"; fi; done",
+    "test": "[ -d \"node_modules/\" ] || npm ci && npx jest",
+    "knip": "knip"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.11.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-jest": "^27.9.0",
+    "eslint-plugin-prettier": "^3.4.1",
+    "jest": "^29.7.0",
+    "knip": "^5.84.1",
+    "prettier": "^2.6.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.9.3"
+  }
+}
