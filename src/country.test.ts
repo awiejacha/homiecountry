@@ -1,4 +1,14 @@
-import Country, { InvalidCountryError, afterVatIn, countryCodeOf, getCountryCode } from './country';
+import {
+  Country,
+  InvalidCountryError,
+  COUNTRY_MAP,
+  countryCodeFrom,
+  maybeCountryCodeFrom,
+  defaultLangIn,
+  maybeDefaultLangIn,
+  afterVatIn,
+  maybeAfterVatIn,
+} from './country';
 
 describe('CountryCode', () => {
   test('should create CountryCode for European countries', () => {
@@ -118,36 +128,84 @@ describe('CountryCode', () => {
       expect(gl.afterVat(125)).toBeCloseTo(100);
     });
   });
+});
 
-  describe('exported utility functions', () => {
-    test('afterVatIn should calculate net price', () => {
-      expect(afterVatIn('GB', 120)).toBeCloseTo(100);
-      expect(afterVatIn('Poland', 123)).toBeCloseTo(100);
-    });
-
-    test('countryCodeOf should return main European country code', () => {
-      expect(countryCodeOf('PL')).toBe('PL');
-      expect(countryCodeOf('Greenland')).toBe('DK');
-    });
-
-    test('functions should return null or false for invalid input', () => {
-      expect(afterVatIn('INVALID', 100)).toBeNull();
-      expect(countryCodeOf('Albania')).toBeNull();
-    });
+describe('COUNTRY_MAP', () => {
+  test('should contain valid configurations for exported countries', () => {
+    expect(COUNTRY_MAP['DE']).toEqual({ name: 'GERMANY', defaultLanguage: 'DE', vatRate: 0.19 });
+    expect(COUNTRY_MAP['GB']).toEqual({ name: 'UNITED KINGDOM', defaultLanguage: 'EN', vatRate: 0.2 });
+    expect(COUNTRY_MAP['PL']).toEqual({ name: 'POLAND', defaultLanguage: 'PL', vatRate: 0.23 });
   });
 
-  describe('getCountryCode', () => {
-    test('should return exactly the same CountryCode when given valid inputs', () => {
-      expect(getCountryCode('PL')).toBe('PL');
-      expect(getCountryCode('GERMANY')).toBe('DE');
-      expect(getCountryCode('RÉUNION')).toBe('FR');
-      expect(getCountryCode('GL')).toBe('DK');
-    });
+  test('should not contain non-configured ISO codes', () => {
+    expect(COUNTRY_MAP).not.toHaveProperty('US');
+    expect(COUNTRY_MAP).not.toHaveProperty('XX');
+  });
+});
 
-    test('should throw InvalidCountryError on invalid input', () => {
-      expect(() => getCountryCode('INVALID_CODE')).toThrow(InvalidCountryError);
-      expect(() => getCountryCode('US')).toThrow(InvalidCountryError);
-      expect(() => getCountryCode('')).toThrow(InvalidCountryError);
-    });
+describe('countryCodeFrom', () => {
+  test('should return exactly the same CountryCode when given valid inputs', () => {
+    expect(countryCodeFrom('PL')).toBe('PL');
+    expect(countryCodeFrom('GERMANY')).toBe('DE');
+    expect(countryCodeFrom('RÉUNION')).toBe('FR');
+    expect(countryCodeFrom('GL')).toBe('DK');
+  });
+
+  test('should throw InvalidCountryError on invalid input', () => {
+    expect(() => countryCodeFrom('INVALID_CODE')).toThrow(InvalidCountryError);
+    expect(() => countryCodeFrom('US')).toThrow(InvalidCountryError);
+    expect(() => countryCodeFrom('')).toThrow(InvalidCountryError);
+  });
+});
+
+describe('maybeCountryCodeFrom', () => {
+  test('should return main European country code for valid input', () => {
+    expect(maybeCountryCodeFrom('PL')).toBe('PL');
+    expect(maybeCountryCodeFrom('Greenland')).toBe('DK');
+  });
+
+  test('should return null for invalid input', () => {
+    expect(maybeCountryCodeFrom('INVALID')).toBeNull();
+    expect(maybeCountryCodeFrom('Albania')).toBeNull();
+  });
+});
+
+describe('defaultLangIn', () => {
+  test('should return default language for a valid country code', () => {
+    expect(defaultLangIn('DE')).toBe('DE');
+    expect(defaultLangIn('FR')).toBe('FR');
+    expect(defaultLangIn('BE')).toBe('NL');
+  });
+});
+
+describe('maybeDefaultLangIn', () => {
+  test('should return default language for a valid country input string', () => {
+    expect(maybeDefaultLangIn('Germany')).toBe('DE');
+    expect(maybeDefaultLangIn('FR')).toBe('FR');
+    expect(maybeDefaultLangIn('Bermuda')).toBe('EN'); // Map to GB -> EN
+  });
+
+  test('should return null for invalid country input string', () => {
+    expect(maybeDefaultLangIn('INVALID')).toBeNull();
+    expect(maybeDefaultLangIn('US')).toBeNull();
+  });
+});
+
+describe('afterVatIn', () => {
+  test('should calculate net price correctly for valid CountryCode', () => {
+    expect(afterVatIn('GB', 120)).toBeCloseTo(100);
+    expect(afterVatIn('PL', 123)).toBeCloseTo(100);
+  });
+});
+
+describe('maybeAfterVatIn', () => {
+  test('should calculate net price correctly for valid country string', () => {
+    expect(maybeAfterVatIn('GB', 120)).toBeCloseTo(100);
+    expect(maybeAfterVatIn('Poland', 123)).toBeCloseTo(100);
+  });
+
+  test('should return null for invalid country input string', () => {
+    expect(maybeAfterVatIn('INVALID', 100)).toBeNull();
+    expect(maybeAfterVatIn('Albania', 100)).toBeNull();
   });
 });

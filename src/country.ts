@@ -145,31 +145,53 @@ Object.entries(COUNTRY_MAP).forEach(([code, { name }]) => {
   map.set(normalizeDiacritics(name), code);
   map.set(code, code);
 });
-export function getCountryCode(input: string): CountryCode {
+export const countryCodeFrom = (input: string): CountryCode => {
   const normalizedInput = normalizeDiacritics(input.toUpperCase());
   if (!map.has(normalizedInput))
     throw new InvalidCountryError(`Invalid country input: ${input}`);
   return map.get(normalizedInput) as CountryCode;
-}
-export function getDefaultLang(countryCode: CountryCode): string {
-  return COUNTRY_MAP[countryCode].defaultLanguage;
-}
-export function afterVat(countryCode: CountryCode, grossPrice: number): number {
-  return grossPrice / (1 + COUNTRY_MAP[countryCode].vatRate);
-}
-export default class Country {
+};
+export const maybeCountryCodeFrom = (c: string): CountryCode | null => {
+  try {
+    return countryCodeFrom(c);
+  } catch (e) {
+    if (e instanceof InvalidCountryError) return null;
+    throw e;
+  }
+};
+export const defaultLangIn = (countryCode: CountryCode): LanguageCode =>
+  COUNTRY_MAP[countryCode].defaultLanguage;
+export const maybeDefaultLangIn = (input: string): LanguageCode | null => {
+  try {
+    return defaultLangIn(countryCodeFrom(input));
+  } catch (e) {
+    if (e instanceof InvalidCountryError) return null;
+    throw e;
+  }
+};
+export const afterVatIn = (countryCode: CountryCode, grossPrice: number): number =>
+  grossPrice / (1 + COUNTRY_MAP[countryCode].vatRate);
+export const maybeAfterVatIn = (input: string, g: number): number | null => {
+  try {
+    return afterVatIn(countryCodeFrom(input), g);
+  } catch (e) {
+    if (e instanceof InvalidCountryError) return null;
+    throw e;
+  }
+};
+export class Country {
   private readonly countryCode: CountryCode;
   constructor(input: string) {
-    this.countryCode = getCountryCode(input);
+    this.countryCode = countryCodeFrom(input);
   }
   public getCode(): CountryCode {
     return this.countryCode;
   }
   public getDefaultLang(): string {
-    return getDefaultLang(this.countryCode);
+    return defaultLangIn(this.countryCode);
   }
   public afterVat(grossPrice: number): number {
-    return afterVat(this.countryCode, grossPrice);
+    return afterVatIn(this.countryCode, grossPrice);
   }
   public toString(): string {
     return this.getCode();
@@ -178,19 +200,3 @@ export default class Country {
     return this.getCode();
   }
 }
-export const afterVatIn = (c: string, g: number): number | null => {
-  try {
-    return afterVat(getCountryCode(c), g);
-  } catch (e) {
-    if (e instanceof InvalidCountryError) return null;
-    throw e;
-  }
-};
-export const countryCodeOf = (c: string): CountryCode | null => {
-  try {
-    return getCountryCode(c);
-  } catch (e) {
-    if (e instanceof InvalidCountryError) return null;
-    throw e;
-  }
-};
