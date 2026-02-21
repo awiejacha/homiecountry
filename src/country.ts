@@ -1,4 +1,3 @@
-// eslint-disable-next-line max-classes-per-file
 export class InvalidCountryError extends Error {
   constructor(message: string) {
     super(message);
