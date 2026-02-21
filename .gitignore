@@ -1,5 +1,5 @@
-.coverage
-.dist
+coverage
+dist
 .DS_Store
 .idea
 node_modules

@@ -1,15 +1,20 @@
 {
-  "name": "@awiejacha/country",
+  "name": "@awiejacha/homiecountry",
   "version": "1.0.0",
-  "main": "src/country.ts",
+  "main": "dist/country.js",
+  "types": "dist/country.d.ts",
+  "files": [
+    "dist"
+  ],
   "keywords": [],
   "author": "Adrian Wiejacha",
   "license": "UNLICENSED",
-  "description": "Handy utils for countries",
-  "private": true,
+  "description": "Homie Country utils",
+  "private": false,
   "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build",
     "lint": "npx eslint . --ext .ts",
-    "build": "rm -f src/**/*/*.dist.js && for f in src/**/*/*.entry.ts; do if [ -f \"$f\" ]; then npx esbuild \"$f\" --bundle --platform=node --target=es2022,node22 --format=esm --tree-shaking=true --outfile=\"${f%.ts}.dist.js\"; fi; done",
     "test": "[ -d \"node_modules/\" ] || npm ci && npx jest",
     "knip": "knip"
   },
