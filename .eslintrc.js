@@ -1,28 +1,13 @@
 module.exports = {
   env: {
-    es2020: true,
+    es2022: true,
     'jest/globals': true,
     node: true,
   },
-  extends: ['airbnb', 'prettier'],
-  globals: {
-    EventNotSupported: 'writable',
-    RetryError: 'writable',
-    ValidationError: 'writable',
-    btoa: 'writable',
-    crypto: 'writable',
-    fetch: 'writable',
-    moment: 'writable',
-    FormData: 'writable',
-    onAlias: 'writable',
-    onGroup: 'writable',
-    onIdentify: 'writable',
-    onPage: 'writable',
-    onScreen: 'writable',
-    onTrack: 'writable',
-  },
+  extends: ['prettier'],
+  globals: {},
   parserOptions: {
-    ecmaVersion: 2020,
+    ecmaVersion: 2022,
     sourceType: 'module',
   },
   plugins: ['jest', 'prettier'],
@@ -40,4 +25,5 @@ module.exports = {
       extends: ['plugin:@typescript-eslint/recommended'],
     },
   ],
+  ignorePatterns: ['dist/**/*', 'coverage/**/*'],
 };

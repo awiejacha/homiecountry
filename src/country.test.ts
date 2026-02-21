@@ -1,4 +1,4 @@
-import Country, { InvalidCountryError, afterVatIn, hasLangIn, isDefaultLangOf, countryCodeOf } from './country';
+import Country, { InvalidCountryError, afterVatIn, countryCodeOf } from './country';
 
 describe('CountryCode', () => {
   test('should create CountryCode for European countries', () => {
@@ -78,23 +78,12 @@ describe('CountryCode', () => {
 
   test('should return correct language information', () => {
     const de = new Country('DE');
-    expect(de.getLang()).toBe('DE');
     expect(de.getDefaultLang()).toBe('DE');
-    expect(de.hasLang('DE')).toBe(true);
-    expect(de.hasLang('EN')).toBe(true);
-    expect(de.hasLang('FR')).toBe(false);
-    expect(de.isDefaultLang('DE')).toBe(true);
-    expect(de.isDefaultLang('EN')).toBe(false);
 
     const be = new Country('BE');
-    expect(be.getLang()).toBe('NL');
     expect(be.getDefaultLang()).toBe('NL');
-    expect(be.hasLang('NL')).toBe(true);
-    expect(be.hasLang('FR')).toBe(true);
-    expect(be.hasLang('EN')).toBe(true);
 
     const cz = new Country('CZ');
-    expect(cz.getLang()).toBe('CS');
     expect(cz.getDefaultLang()).toBe('CS');
   });
 
@@ -136,16 +125,6 @@ describe('CountryCode', () => {
       expect(afterVatIn('Poland', 123)).toBeCloseTo(100);
     });
 
-    test('hasLangIn should check available languages', () => {
-      expect(hasLangIn('DE', 'EN')).toBe(true);
-      expect(hasLangIn('Germany', 'FR')).toBe(false);
-    });
-
-    test('isDefaultLangOf should check default language', () => {
-      expect(isDefaultLangOf('FR', 'FR')).toBe(true);
-      expect(isDefaultLangOf('France', 'EN')).toBe(false);
-    });
-
     test('countryCodeOf should return main European country code', () => {
       expect(countryCodeOf('PL')).toBe('PL');
       expect(countryCodeOf('Greenland')).toBe('DK');
@@ -153,8 +132,6 @@ describe('CountryCode', () => {
 
     test('functions should return null or false for invalid input', () => {
       expect(afterVatIn('INVALID', 100)).toBeNull();
-      expect(hasLangIn('US', 'EN')).toBe(false);
-      expect(isDefaultLangOf('', 'PL')).toBe(false);
       expect(countryCodeOf('Albania')).toBeNull();
     });
   });

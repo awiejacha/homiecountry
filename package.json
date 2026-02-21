@@ -1,7 +1,7 @@
 {
   "name": "@awiejacha/homiecountry",
-  "version": "1.0.0",
-  "main": "dist/country.js",
+  "version": "1.0.2",
+  "main": "dist/country.min.js",
   "types": "dist/country.d.ts",
   "files": [
     "dist"
@@ -12,8 +12,10 @@
   "description": "Homie Country utils",
   "private": false,
   "scripts": {
-    "build": "tsc",
-    "prepublishOnly": "npm run build",
+    "transpile": "rm -rf dist && tsc",
+    "minify": "find dist -type f -name \"*.min.js\" -delete && find dist -type f -name \"*.js\" ! -name \"*.min.js\" -exec sh -c 'npx esbuild \"$1\" --platform=node --target=es2022 --minify --outfile=\"${1%.js}.min.js\"' _ {} \\;",
+    "build": "npm run transpile && npm run minify",
+    "prepublishOnly": "npm test && npm run lint && npm run build",
     "lint": "npx eslint . --ext .ts",
     "test": "[ -d \"node_modules/\" ] || npm ci && npx jest",
     "knip": "knip"
@@ -22,8 +24,9 @@
     "@types/jest": "^29.5.12",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
+    "esbuild": "^0.27.3",
     "eslint": "^8.11.0",
-    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-jest": "^27.9.0",
     "eslint-plugin-prettier": "^3.4.1",
