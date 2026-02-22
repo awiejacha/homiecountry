@@ -13,7 +13,8 @@
   "private": false,
   "scripts": {
     "transpile": "rm -rf dist && tsc",
-    "minify": "find dist -type f -name \"*.min.js\" -delete && find dist -type f -name \"*.js\" ! -name \"*.min.js\" -exec sh -c 'npx esbuild \"$1\" --platform=node --target=es2022 --minify --outfile=\"${1%.js}.min.js\"' _ {} \\; && find dist -type f -name \"*.js\" ! -name \"*.min.js\" -delete",    "build": "npm run transpile && npm run minify",
+    "minify": "find dist -type f -name \"*.min.js\" -delete && find dist -type f -name \"*.js\" ! -name \"*.min.js\" -exec sh -c 'npx esbuild \"$1\" --platform=node --target=es2022 --minify --outfile=\"${1%.js}.min.js\"' _ {} \\; && find dist -type f -name \"*.js\" ! -name \"*.min.js\" -delete",
+    "build": "npm run transpile && npm run minify",
     "prepublishOnly": "npm test && npm run lint && npm run knip && npm run build",
     "lint": "npx eslint . --ext .ts",
     "test": "[ -d \"node_modules/\" ] || npm ci && npx jest",

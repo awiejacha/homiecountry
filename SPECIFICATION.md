@@ -10,9 +10,10 @@ The library is structured to export pure functions alongside the `Country` class
 
 The library supports standard European countries and their dependent territories. Countries are mapped to their respective ISO alpha-2 codes (e.g., `DE`, `FR`, `PL`).
 
-Dependent territories (like French Guiana, Martinique, Gibraltar) are mapped to their parent European country's ISO code for tax and operational purposes within the scope of this package. 
+Dependent territories (like French Guiana, Martinique, Gibraltar) are mapped to their parent European country's ISO code for tax and operational purposes within the scope of this package.
 
 For instance:
+
 - `RÉUNION` -> `FR`
 - `BERMUDA` -> `GB`
 - `SVALBARD AND JAN MAYEN` -> `NO`
@@ -22,11 +23,11 @@ All country matching is performed case-insensitively and diacritics are normaliz
 
 ## Language Configurations
 
-Every supported country has a defined primary `language` and a `defaultLanguage`.
+Every supported country has a defined `defLang`.
 
 | Country        | Code | Default Lang |
-|----------------|------|--------------|
-| Germany        |  DE  | DE           |
+| -------------- | ---- | ------------ |
+| Germany        | DE   | DE           |
 | Switzerland    | CH   | DE           |
 | Austria        | AT   | DE           |
 | France         | FR   | FR           |
@@ -57,6 +58,7 @@ The library encodes the default VAT (Value Added Tax) rate for each supported co
 `net = gross / (1 + vatRate)`
 
 ### Supported VAT Rates
+
 - DE: 19% (0.19)
 - CH: 8.1% (0.081)
 - AT: 20% (0.2)
@@ -83,4 +85,4 @@ The library encodes the default VAT (Value Added Tax) rate for each supported co
 
 ## Error Handling
 
-When evaluating invalid inputs (e.g., an unsupported country or territory), functions in the core API will throw an `InvalidCountryError`. Safe wrappers (`...In`, `...Of`) catch this specific error and return `null` or `false` to prevent runtime crashes.
+When evaluating invalid inputs (e.g., an unsupported country or territory), functions in the core API will throw an `InvalidCountryError`. Safe wrappers (`maybe...`) catch this specific error and return `null` to prevent runtime crashes.

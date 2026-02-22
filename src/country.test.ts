@@ -1,7 +1,6 @@
 import {
   Country,
   InvalidCountryError,
-  COUNTRY_MAP,
   countryCodeFrom,
   maybeCountryCodeFrom,
   defaultLangIn,
@@ -127,19 +126,6 @@ describe('CountryCode', () => {
       // 125 / 1.25 = 100
       expect(gl.afterVat(125)).toBeCloseTo(100);
     });
-  });
-});
-
-describe('COUNTRY_MAP', () => {
-  test('should contain valid configurations for exported countries', () => {
-    expect(COUNTRY_MAP['DE']).toEqual({ name: 'GERMANY', defLang: 'DE', vat: 0.19 });
-    expect(COUNTRY_MAP['GB']).toEqual({ name: 'UNITED KINGDOM', defLang: 'EN', vat: 0.2 });
-    expect(COUNTRY_MAP['PL']).toEqual({ name: 'POLAND', defLang: 'PL', vat: 0.23 });
-  });
-
-  test('should not contain non-configured ISO codes', () => {
-    expect(COUNTRY_MAP).not.toHaveProperty('US');
-    expect(COUNTRY_MAP).not.toHaveProperty('XX');
   });
 });
 

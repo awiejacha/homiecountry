@@ -12,7 +12,7 @@ export class InvalidCountryError extends Error {
 }
 type CountryConfig = { name: string; defLang: string; vat: number; mapsTo: string };
 type TerritoryConfig = { name: string; mapsTo: string };
-export const COUNTRY_MAP: Record<string, CountryConfig | TerritoryConfig> = {
+const COUNTRY_MAP: Record<string, CountryConfig | TerritoryConfig> = {
   // Countries
   AT: { name: 'AUSTRIA', defLang: 'DE', vat: 0.2, mapsTo: 'AT' },
   BE: { name: 'BELGIUM', defLang: 'NL', vat: 0.21, mapsTo: 'BE' },
