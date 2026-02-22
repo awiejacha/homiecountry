@@ -1,8 +1,47 @@
-export type CountryCode = (typeof COUNTRY_MAP)[keyof typeof COUNTRY_MAP]['mapsTo'];
-export type LanguageCode = Extract<
-  (typeof COUNTRY_MAP)[CountryCode],
-  { defLang: string }
->['defLang'];
+export type CountryCode =
+  | 'AT'
+  | 'BE'
+  | 'CH'
+  | 'CZ'
+  | 'DE'
+  | 'DK'
+  | 'ES'
+  | 'FI'
+  | 'FR'
+  | 'GB'
+  | 'GR'
+  | 'HR'
+  | 'HU'
+  | 'IT'
+  | 'LU'
+  | 'NL'
+  | 'NO'
+  | 'PL'
+  | 'PT'
+  | 'RO'
+  | 'SE'
+  | 'SI'
+  | 'SK';
+export type LanguageCode =
+  | 'CS'
+  | 'DA'
+  | 'DE'
+  | 'EL'
+  | 'EN'
+  | 'ES'
+  | 'FI'
+  | 'FR'
+  | 'HR'
+  | 'HU'
+  | 'IT'
+  | 'NL'
+  | 'NO'
+  | 'PL'
+  | 'PT'
+  | 'RO'
+  | 'SK'
+  | 'SL'
+  | 'SV';
 export class InvalidCountryError extends Error {
   constructor(message: string) {
     super(message);
@@ -10,8 +49,13 @@ export class InvalidCountryError extends Error {
     Object.setPrototypeOf(this, InvalidCountryError.prototype);
   }
 }
-type CountryConfig = { name: string; defLang: string; vat: number; mapsTo: string };
-type TerritoryConfig = { name: string; mapsTo: string };
+type CountryConfig = {
+  name: string;
+  defLang: LanguageCode;
+  vat: number;
+  mapsTo: CountryCode;
+};
+type TerritoryConfig = { name: string; mapsTo: CountryCode };
 const COUNTRY_MAP: Record<string, CountryConfig | TerritoryConfig> = {
   // Countries
   AT: { name: 'AUSTRIA', defLang: 'DE', vat: 0.2, mapsTo: 'AT' },
