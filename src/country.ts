@@ -1,5 +1,8 @@
-export type CountryCode = keyof typeof COUNTRY_MAP;
-export type LanguageCode = (typeof COUNTRY_MAP)[CountryCode]['defaultLanguage'];
+export type CountryCode = (typeof COUNTRY_MAP)[keyof typeof COUNTRY_MAP]['mapsTo'];
+export type LanguageCode = Extract<
+  (typeof COUNTRY_MAP)[CountryCode],
+  { defLang: string }
+>['defLang'];
 export class InvalidCountryError extends Error {
   constructor(message: string) {
     super(message);
@@ -7,143 +10,77 @@ export class InvalidCountryError extends Error {
     Object.setPrototypeOf(this, InvalidCountryError.prototype);
   }
 }
-const CODE_MAP = {
-  AI: 'GB',
-  AT: 'AT',
-  AW: 'NL',
-  AX: 'FI',
-  BE: 'BE',
-  BL: 'FR',
-  BM: 'GB',
-  BQ: 'NL',
-  BV: 'NO',
-  CH: 'CH',
-  CW: 'NL',
-  CZ: 'CZ',
-  DE: 'DE',
-  DK: 'DK',
-  ES: 'ES',
-  FI: 'FI',
-  FK: 'GB',
-  FO: 'DK',
-  FR: 'FR',
-  GB: 'GB',
-  GF: 'FR',
-  GG: 'GB',
-  GI: 'GB',
-  GL: 'DK',
-  GP: 'FR',
-  GR: 'GR',
-  GS: 'GB',
-  HR: 'HR',
-  HU: 'HU',
-  IM: 'GB',
-  IO: 'GB',
-  IT: 'IT',
-  JE: 'GB',
-  KY: 'GB',
-  LU: 'LU',
-  MF: 'FR',
-  MQ: 'FR',
-  MS: 'GB',
-  NC: 'FR',
-  NL: 'NL',
-  NO: 'NO',
-  PF: 'FR',
-  PL: 'PL',
-  PM: 'FR',
-  PN: 'GB',
-  PT: 'PT',
-  RE: 'FR',
-  RO: 'RO',
-  SE: 'SE',
-  SH: 'GB',
-  SI: 'SI',
-  SJ: 'NO',
-  SK: 'SK',
-  SX: 'NL',
-  TC: 'GB',
-  TF: 'FR',
-  VG: 'GB',
-  WF: 'FR',
-  YT: 'FR',
-} as const;
-export const COUNTRY_MAP: Record<
-  string,
-  { name: string; defaultLanguage: string; vatRate: number }
-> = {
-  DE: { name: 'GERMANY', defaultLanguage: 'DE', vatRate: 0.19 },
-  CH: { name: 'SWITZERLAND', defaultLanguage: 'DE', vatRate: 0.081 },
-  AT: { name: 'AUSTRIA', defaultLanguage: 'DE', vatRate: 0.2 },
-  FR: { name: 'FRANCE', defaultLanguage: 'FR', vatRate: 0.2 },
-  IT: { name: 'ITALY', defaultLanguage: 'IT', vatRate: 0.22 },
-  ES: { name: 'SPAIN', defaultLanguage: 'ES', vatRate: 0.21 },
-  NL: { name: 'NETHERLANDS', defaultLanguage: 'NL', vatRate: 0.21 },
-  PL: { name: 'POLAND', defaultLanguage: 'PL', vatRate: 0.23 },
-  SK: { name: 'SLOVAKIA', defaultLanguage: 'SK', vatRate: 0.2 },
-  CZ: { name: 'CZECH REPUBLIC', defaultLanguage: 'CS', vatRate: 0.21 },
-  PT: { name: 'PORTUGAL', defaultLanguage: 'PT', vatRate: 0.23 },
-  BE: { name: 'BELGIUM', defaultLanguage: 'NL', vatRate: 0.21 },
-  LU: { name: 'LUXEMBOURG', defaultLanguage: 'FR', vatRate: 0.17 },
-  DK: { name: 'DENMARK', defaultLanguage: 'DA', vatRate: 0.25 },
-  SE: { name: 'SWEDEN', defaultLanguage: 'SV', vatRate: 0.25 },
-  HR: { name: 'CROATIA', defaultLanguage: 'HR', vatRate: 0.25 },
-  FI: { name: 'FINLAND', defaultLanguage: 'FI', vatRate: 0.24 },
-  SI: { name: 'SLOVENIA', defaultLanguage: 'SL', vatRate: 0.22 },
-  HU: { name: 'HUNGARY', defaultLanguage: 'HU', vatRate: 0.27 },
-  NO: { name: 'NORWAY', defaultLanguage: 'NO', vatRate: 0.25 },
-  GR: { name: 'GREECE', defaultLanguage: 'EL', vatRate: 0.24 },
-  RO: { name: 'ROMANIA', defaultLanguage: 'RO', vatRate: 0.19 },
-  GB: { name: 'UNITED KINGDOM', defaultLanguage: 'EN', vatRate: 0.2 },
-} as const;
-const TERRITORY_MAP: Record<string, string> = {
-  GREENLAND: 'GL',
-  'FAROE ISLANDS': 'FO',
-  'FRENCH GUIANA': 'GF',
-  GUADELOUPE: 'GP',
-  MARTINIQUE: 'MQ',
-  MAYOTTE: 'YT',
-  RÉUNION: 'RE',
-  'SAINT BARTHÉLEMY': 'BL',
-  'SAINT MARTIN': 'MF',
-  'SAINT PIERRE AND MIQUELON': 'PM',
-  'WALLIS AND FUTUNA': 'WF',
-  'FRENCH POLYNESIA': 'PF',
-  'NEW CALEDONIA': 'NC',
-  'FRENCH SOUTHERN TERRITORIES': 'TF',
-  ARUBA: 'AW',
-  CURAÇAO: 'CW',
-  'SINT MAARTEN': 'SX',
-  'CARIBBEAN NETHERLANDS': 'BQ',
-  'SVALBARD AND JAN MAYEN': 'SJ',
-  'BOUVET ISLAND': 'BV',
-  GIBRALTAR: 'GI',
-  GUERNSEY: 'GG',
-  'ISLE OF MAN': 'IM',
-  JERSEY: 'JE',
-  ANGUILLA: 'AI',
-  BERMUDA: 'BM',
-  'BRITISH INDIAN OCEAN TERRITORY': 'IO',
-  'BRITISH VIRGIN ISLANDS': 'VG',
-  'CAYMAN ISLANDS': 'KY',
-  'FALKLAND ISLANDS': 'FK',
-  MONTSERRAT: 'MS',
-  'PITCAIRN ISLANDS': 'PN',
-  'SAINT HELENA, ASCENSION AND TRISTAN DA CUNHA': 'SH',
-  'SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS': 'GS',
-  'TURKS AND CAICOS ISLANDS': 'TC',
-  'ÅLAND ISLANDS': 'AX',
+type CountryConfig = { name: string; defLang: string; vat: number; mapsTo: string };
+type TerritoryConfig = { name: string; mapsTo: string };
+export const COUNTRY_MAP: Record<string, CountryConfig | TerritoryConfig> = {
+  // Countries
+  AT: { name: 'AUSTRIA', defLang: 'DE', vat: 0.2, mapsTo: 'AT' },
+  BE: { name: 'BELGIUM', defLang: 'NL', vat: 0.21, mapsTo: 'BE' },
+  CH: { name: 'SWITZERLAND', defLang: 'DE', vat: 0.081, mapsTo: 'CH' },
+  CZ: { name: 'CZECH REPUBLIC', defLang: 'CS', vat: 0.21, mapsTo: 'CZ' },
+  DE: { name: 'GERMANY', defLang: 'DE', vat: 0.19, mapsTo: 'DE' },
+  DK: { name: 'DENMARK', defLang: 'DA', vat: 0.25, mapsTo: 'DK' },
+  ES: { name: 'SPAIN', defLang: 'ES', vat: 0.21, mapsTo: 'ES' },
+  FI: { name: 'FINLAND', defLang: 'FI', vat: 0.24, mapsTo: 'FI' },
+  FR: { name: 'FRANCE', defLang: 'FR', vat: 0.2, mapsTo: 'FR' },
+  GB: { name: 'UNITED KINGDOM', defLang: 'EN', vat: 0.2, mapsTo: 'GB' },
+  GR: { name: 'GREECE', defLang: 'EL', vat: 0.24, mapsTo: 'GR' },
+  HR: { name: 'CROATIA', defLang: 'HR', vat: 0.25, mapsTo: 'HR' },
+  HU: { name: 'HUNGARY', defLang: 'HU', vat: 0.27, mapsTo: 'HU' },
+  IT: { name: 'ITALY', defLang: 'IT', vat: 0.22, mapsTo: 'IT' },
+  LU: { name: 'LUXEMBOURG', defLang: 'FR', vat: 0.17, mapsTo: 'LU' },
+  NL: { name: 'NETHERLANDS', defLang: 'NL', vat: 0.21, mapsTo: 'NL' },
+  NO: { name: 'NORWAY', defLang: 'NO', vat: 0.25, mapsTo: 'NO' },
+  PL: { name: 'POLAND', defLang: 'PL', vat: 0.23, mapsTo: 'PL' },
+  PT: { name: 'PORTUGAL', defLang: 'PT', vat: 0.23, mapsTo: 'PT' },
+  RO: { name: 'ROMANIA', defLang: 'RO', vat: 0.19, mapsTo: 'RO' },
+  SE: { name: 'SWEDEN', defLang: 'SV', vat: 0.25, mapsTo: 'SE' },
+  SI: { name: 'SLOVENIA', defLang: 'SL', vat: 0.22, mapsTo: 'SI' },
+  SK: { name: 'SLOVAKIA', defLang: 'SK', vat: 0.2, mapsTo: 'SK' },
+  // Territories
+  AI: { name: 'ANGUILLA', mapsTo: 'GB' },
+  AW: { name: 'ARUBA', mapsTo: 'NL' },
+  AX: { name: 'ÅLAND ISLANDS', mapsTo: 'FI' },
+  BL: { name: 'SAINT BARTHÉLEMY', mapsTo: 'FR' },
+  BM: { name: 'BERMUDA', mapsTo: 'GB' },
+  BQ: { name: 'CARIBBEAN NETHERLANDS', mapsTo: 'NL' },
+  BV: { name: 'BOUVET ISLAND', mapsTo: 'NO' },
+  CW: { name: 'CURAÇAO', mapsTo: 'NL' },
+  FK: { name: 'FALKLAND ISLANDS', mapsTo: 'GB' },
+  FO: { name: 'FAROE ISLANDS', mapsTo: 'DK' },
+  GF: { name: 'FRENCH GUIANA', mapsTo: 'FR' },
+  GG: { name: 'GUERNSEY', mapsTo: 'GB' },
+  GI: { name: 'GIBRALTAR', mapsTo: 'GB' },
+  GL: { name: 'GREENLAND', mapsTo: 'DK' },
+  GP: { name: 'GUADELOUPE', mapsTo: 'FR' },
+  GS: { name: 'SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS', mapsTo: 'GB' },
+  IM: { name: 'ISLE OF MAN', mapsTo: 'GB' },
+  IO: { name: 'BRITISH INDIAN OCEAN TERRITORY', mapsTo: 'GB' },
+  JE: { name: 'JERSEY', mapsTo: 'GB' },
+  KY: { name: 'CAYMAN ISLANDS', mapsTo: 'GB' },
+  MF: { name: 'SAINT MARTIN', mapsTo: 'FR' },
+  MQ: { name: 'MARTINIQUE', mapsTo: 'FR' },
+  MS: { name: 'MONTSERRAT', mapsTo: 'GB' },
+  NC: { name: 'NEW CALEDONIA', mapsTo: 'FR' },
+  PF: { name: 'FRENCH POLYNESIA', mapsTo: 'FR' },
+  PM: { name: 'SAINT PIERRE AND MIQUELON', mapsTo: 'FR' },
+  PN: { name: 'PITCAIRN ISLANDS', mapsTo: 'GB' },
+  RE: { name: 'RÉUNION', mapsTo: 'FR' },
+  SH: { name: 'SAINT HELENA, ASCENSION AND TRISTAN DA CUNHA', mapsTo: 'GB' },
+  SJ: { name: 'SVALBARD AND JAN MAYEN', mapsTo: 'NO' },
+  SX: { name: 'SINT MAARTEN', mapsTo: 'NL' },
+  TC: { name: 'TURKS AND CAICOS ISLANDS', mapsTo: 'GB' },
+  TF: { name: 'FRENCH SOUTHERN TERRITORIES', mapsTo: 'FR' },
+  VG: { name: 'BRITISH VIRGIN ISLANDS', mapsTo: 'GB' },
+  WF: { name: 'WALLIS AND FUTUNA', mapsTo: 'FR' },
+  YT: { name: 'MAYOTTE', mapsTo: 'FR' },
 } as const;
 const normalizeDiacritics = (s: string) =>
   s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 const map = new Map();
-Object.entries(TERRITORY_MAP).forEach(([name, code]) => {
-  map.set(normalizeDiacritics(name), CODE_MAP[code]);
-  map.set(code, CODE_MAP[code]);
-});
-Object.entries(COUNTRY_MAP).forEach(([code, { name }]) => {
-  map.set(normalizeDiacritics(name), code);
-  map.set(code, code);
+Object.entries(COUNTRY_MAP).forEach(([code, config]) => {
+  map.set(normalizeDiacritics(config.name), config.mapsTo);
+  map.set(code, config.mapsTo);
 });
 export const countryCodeFrom = (input: string): CountryCode => {
   const normalizedInput = normalizeDiacritics(input.toUpperCase());
@@ -160,7 +97,7 @@ export const maybeCountryCodeFrom = (c: string): CountryCode | null => {
   }
 };
 export const defaultLangIn = (countryCode: CountryCode): LanguageCode =>
-  COUNTRY_MAP[countryCode].defaultLanguage;
+  (COUNTRY_MAP[countryCode] as CountryConfig).defLang;
 export const maybeDefaultLangIn = (input: string): LanguageCode | null => {
   try {
     return defaultLangIn(countryCodeFrom(input));
@@ -170,7 +107,7 @@ export const maybeDefaultLangIn = (input: string): LanguageCode | null => {
   }
 };
 export const afterVatIn = (countryCode: CountryCode, grossPrice: number): number =>
-  grossPrice / (1 + COUNTRY_MAP[countryCode].vatRate);
+  grossPrice / (1 + (COUNTRY_MAP[countryCode] as CountryConfig).vat);
 export const maybeAfterVatIn = (input: string, g: number): number | null => {
   try {
     return afterVatIn(countryCodeFrom(input), g);

@@ -132,9 +132,9 @@ describe('CountryCode', () => {
 
 describe('COUNTRY_MAP', () => {
   test('should contain valid configurations for exported countries', () => {
-    expect(COUNTRY_MAP['DE']).toEqual({ name: 'GERMANY', defaultLanguage: 'DE', vatRate: 0.19 });
-    expect(COUNTRY_MAP['GB']).toEqual({ name: 'UNITED KINGDOM', defaultLanguage: 'EN', vatRate: 0.2 });
-    expect(COUNTRY_MAP['PL']).toEqual({ name: 'POLAND', defaultLanguage: 'PL', vatRate: 0.23 });
+    expect(COUNTRY_MAP['DE']).toEqual({ name: 'GERMANY', defLang: 'DE', vat: 0.19 });
+    expect(COUNTRY_MAP['GB']).toEqual({ name: 'UNITED KINGDOM', defLang: 'EN', vat: 0.2 });
+    expect(COUNTRY_MAP['PL']).toEqual({ name: 'POLAND', defLang: 'PL', vat: 0.23 });
   });
 
   test('should not contain non-configured ISO codes', () => {
