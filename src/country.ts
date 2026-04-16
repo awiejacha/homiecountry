@@ -176,7 +176,7 @@ const FALLBACK_CHAR_MAP: Record<string, string> = {
 };
 const normalizeDiacritics = (s: string) => {
   return s.replace(
-    /[\u0300-\u036f]|[^\u0000-\u007E]/g,
+    /[^\x20-\x7E]/g,
     (char) => FALLBACK_CHAR_MAP[char] ?? char,
   );
 };
