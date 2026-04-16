@@ -119,9 +119,68 @@ const COUNTRY_MAP: Record<string, CountryConfig | TerritoryConfig> = {
   WF: { name: 'WALLIS AND FUTUNA', mapsTo: 'FR' },
   YT: { name: 'MAYOTTE', mapsTo: 'FR' },
 } as const;
-const normalizeDiacritics = (s: string) =>
-  s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-const map = new Map();
+const FALLBACK_CHAR_MAP: Record<string, string> = {
+  À: 'A',
+  Á: 'A',
+  Â: 'A',
+  Ã: 'A',
+  Ä: 'A',
+  Å: 'A',
+  Ç: 'C',
+  È: 'E',
+  É: 'E',
+  Ê: 'E',
+  Ë: 'E',
+  Ì: 'I',
+  Í: 'I',
+  Î: 'I',
+  Ï: 'I',
+  Ñ: 'N',
+  Ò: 'O',
+  Ó: 'O',
+  Ô: 'O',
+  Õ: 'O',
+  Ö: 'O',
+  Ù: 'U',
+  Ú: 'U',
+  Û: 'U',
+  Ü: 'U',
+  Ý: 'Y',
+  à: 'a',
+  á: 'a',
+  â: 'a',
+  ã: 'a',
+  ä: 'a',
+  å: 'a',
+  ç: 'c',
+  è: 'e',
+  é: 'e',
+  ê: 'e',
+  ë: 'e',
+  ì: 'i',
+  í: 'i',
+  î: 'i',
+  ï: 'i',
+  ñ: 'n',
+  ò: 'o',
+  ó: 'o',
+  ô: 'o',
+  õ: 'o',
+  ö: 'o',
+  ù: 'u',
+  ú: 'u',
+  û: 'u',
+  ü: 'u',
+  ý: 'y',
+  ÿ: 'y',
+};
+const normalizeDiacritics = (s: string) => {
+  return s.replace(
+    /[\u0300-\u036f]|[^\u0000-\u007E]/g,
+    (char) => FALLBACK_CHAR_MAP[char] ?? char,
+  );
+};
+const map = new Map<string, CountryCode>();
 Object.entries(COUNTRY_MAP).forEach(([code, config]) => {
   map.set(normalizeDiacritics(config.name), config.mapsTo);
   map.set(code, config.mapsTo);

@@ -142,6 +142,35 @@ describe('countryCodeFrom', () => {
     expect(() => countryCodeFrom('US')).toThrow(InvalidCountryError);
     expect(() => countryCodeFrom('')).toThrow(InvalidCountryError);
   });
+
+  test.each([
+    {
+      withDiacritics: 'ÅLAND ISLANDS',
+      withoutDiacritics: 'ALAND ISLANDS',
+      expected: 'FI',
+    },
+    {
+      withDiacritics: 'SAINT BARTHÉLEMY',
+      withoutDiacritics: 'SAINT BARTHELEMY',
+      expected: 'FR',
+    },
+    {
+      withDiacritics: 'CURAÇAO',
+      withoutDiacritics: 'CURACAO',
+      expected: 'NL',
+    },
+    {
+      withDiacritics: 'RÉUNION',
+      withoutDiacritics: 'REUNION',
+      expected: 'FR',
+    },
+  ])(
+    'should normalize diacritics for $withDiacritics',
+    ({ withDiacritics, withoutDiacritics, expected }) => {
+      expect(countryCodeFrom(withDiacritics)).toBe(expected);
+      expect(countryCodeFrom(withoutDiacritics)).toBe(expected);
+    },
+  );
 });
 
 describe('maybeCountryCodeFrom', () => {
